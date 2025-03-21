@@ -26,3 +26,7 @@ steps:
   # Update the image for container2 in the Kubernetes Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['set', 'image', 'deployment/container2', 'container2=us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container2:$COMMIT_SHA']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  substitutionOption: ALLOW_LOOSE
