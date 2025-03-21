@@ -27,14 +27,14 @@ steps:
 
   # Update the image for container1 in the Kubernetes Deployment
   - name: 'gcr.io/cloud-builders/kubectl'
-    entrypoint: 'bash'
-    args:
-    - '-c'
-    - |
-      sed "s/\\$TAG/$COMMIT_SHA/g" kubernetes/container1-deployment.yaml > /tmp/container1-deployment.yaml
-      sed "s/\\$TAG/$COMMIT_SHA/g" kubernetes/container2-deployment.yaml > /tmp/container2-deployment.yaml
-      kubectl apply -f /tmp/container1-deployment.yaml
-      kubectl apply -f /tmp/container2-deployment.yaml
+    args: ['apply', '-f', 'kubernetes/container1.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=assignment-3'
+  
+  # Update the image for container2 in the Kubernetes Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'kubernetes/container2.yaml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=assignment-3'
