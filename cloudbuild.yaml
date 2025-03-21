@@ -1,48 +1,28 @@
 steps:
-  # Build and push Container 1
+  # Build the Docker image for container1
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'container1'
-    args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:$SHORT_SHA'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:latest'
-      - '.'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container1:$COMMIT_SHA', './container1']
 
+  # Build the Docker image for container2
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'container1'
-    args: ['push', 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:$SHORT_SHA']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container2:$COMMIT_SHA', './container2']
 
-  # Build and push Container 2
+  # Push the image for container1 to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'container2'
-    args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:$SHORT_SHA'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:latest'
-      - '.'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container1:$COMMIT_SHA']
 
+  # Push the image for container2 to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    dir: 'container2'
-    args: ['push', 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:$SHORT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container2:$COMMIT_SHA']
 
-  # Update Kubernetes manifests with new image tags
-  - name: 'ubuntu'
-    args: ['sed', '-i', 's/$TAG/$SHORT_SHA/g', 'kubernetes/container1.yaml']
-  - name: 'ubuntu'
-    args: ['sed', '-i', 's/$TAG/$SHORT_SHA/g', 'kubernetes/container2.yaml']
+  # Authenticate with your GKE cluster
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['container', 'clusters', 'get-credentials', 'my-cluster', '--zone', 'us-central1-a', '--project', '$PROJECT_ID']
 
-  # Deploy to GKE
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    args:
-      - 'run'
-      - '--filename=kubernetes'
-      - '--location=us-central1-c'
-      - '--cluster=assignment-3'
+  # Update the image for container1 in the Kubernetes Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/container1', 'container1=us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container1:$COMMIT_SHA']
 
-options:
-  logging: CLOUD_LOGGING_ONLY
-  substitutionOption: ALLOW_LOOSE
+  # Update the image for container2 in the Kubernetes Deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['set', 'image', 'deployment/container2', 'container2=us-central1-docker.pkg.dev/$PROJECT_ID/assignment3/container2:$COMMIT_SHA']
