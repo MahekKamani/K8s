@@ -20,7 +20,7 @@ steps:
     args: ['container', 'clusters', 'get-credentials', 'assignment-3', '--zone', 'us-central1-c', '--project', '$PROJECT_ID']
 
   - name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'kubernetes/pvc.yaml']
+    args: ['apply', '-f', 'kubernetes/pv-claim.yaml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=assignment-3'
