@@ -44,4 +44,5 @@ steps:
       - '--cluster=assignment-3'
 
 options:
+  logging: CLOUD_LOGGING_ONLY
   substitutionOption: ALLOW_LOOSE
