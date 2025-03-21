@@ -1,0 +1,47 @@
+steps:
+  # Build and push Container 1
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'container1'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:$SHORT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'container1'
+    args: ['push', 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container1:$SHORT_SHA']
+
+  # Build and push Container 2
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'container2'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:$SHORT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'container2'
+    args: ['push', 'us-central1-docker.pkg.dev/terraform-gke-test-453503/assignment3/container2:$SHORT_SHA']
+
+  # Update Kubernetes manifests with new image tags
+  - name: 'ubuntu'
+    args: ['sed', '-i', 's/$TAG/$SHORT_SHA/g', 'kubernetes/container1.yaml']
+  - name: 'ubuntu'
+    args: ['sed', '-i', 's/$TAG/$SHORT_SHA/g', 'kubernetes/container2.yaml']
+
+  # Deploy to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - 'run'
+      - '--filename=kubernetes'
+      - '--location=us-central1-a'
+      - '--cluster=assignment-3'
+
+options:
+  substitutionOption: ALLOW_LOOSE
