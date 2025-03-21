@@ -19,6 +19,12 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['container', 'clusters', 'get-credentials', 'assignment-3', '--region', 'us-central1', '--project', '$PROJECT_ID']
 
+  - name: 'ubuntu'
+    args: ['sed', '-i', "s|:latest|:$COMMIT_SHA|g", 'kubernetes/container1.yaml']
+  
+  - name: 'ubuntu'
+    args: ['sed', '-i', "s|:latest|:$COMMIT_SHA|g", 'kubernetes/container2.yaml']
+
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['apply', '-f', 'kubernetes/pv-claim.yaml']
     env:
