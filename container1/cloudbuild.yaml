@@ -1,0 +1,28 @@
+steps:
+  # Build the Docker image for container1
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/container1/container1:$COMMIT_SHA', './container1']
+  # Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/container1/container1:$COMMIT_SHA']
+  # Authenticate with GKE cluster
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['container', 'clusters', 'get-credentials', 'assignment-3', '--region', 'us-central1', '--project', '$PROJECT_ID']
+  # Update image tag in container1.yaml
+  - name: 'ubuntu'
+    args: ['sed', '-i', "s|:latest|:$COMMIT_SHA|g", 'kubernetes/container1.yaml']
+  # Apply the PVC
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'kubernetes/pv-claim.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=assignment-3'
+  # Apply the container1 deployment and service
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'kubernetes/container1.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=assignment-3'
+options:
+  logging: CLOUD_LOGGING_ONLY
+  substitutionOption: ALLOW_LOOSE

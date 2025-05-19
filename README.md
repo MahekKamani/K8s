@@ -38,7 +38,7 @@ The architecture consists of the following components:
 
 Below is the architecture diagram for the project:
 
-![Architecture Diagram](./architecture-diagram.png)
+![Architecture Diagram](./Architecture.png)
 
 ---
 
