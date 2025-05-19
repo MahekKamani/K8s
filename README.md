@@ -28,17 +28,13 @@ The application is designed to:
 
 ## Architecture
 
+![Architecture Diagram](./Architecture.png)
+
 The architecture consists of the following components:
 1. **Google Kubernetes Engine (GKE)**: Hosts the Kubernetes cluster.
 2. **Persistent Volume (PV)**: Shared storage for both containers.
 3. **Container 1**: Exposes an API for file uploads and forwards processing requests to Container 2.
 4. **Container 2**: Processes CSV files and calculates the sum of product amounts.
-
-### Architecture Diagram
-
-Below is the architecture diagram for the project:
-
-![Architecture Diagram](./Architecture.png)
 
 ---
 
