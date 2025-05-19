@@ -1,4 +1,4 @@
-# Kubernetes-Based Multi-Container Application
+# Kubernetes-Based Microservice Application
 
 This project demonstrates a Kubernetes-based multi-container application deployed on Google Kubernetes Engine (GKE). The application consists of two containers (`container1` and `container2`) that communicate with each other to process and analyze CSV files stored in a shared Persistent Volume (PV).
 
